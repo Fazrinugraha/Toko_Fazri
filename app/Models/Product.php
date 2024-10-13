@@ -12,4 +12,9 @@ class Product extends Model
     protected $fillable = [
         'name','price','category','description','image'
     ];
+     // Relasi ke flash sale
+    public function flashSales()
+    {
+        return $this->hasMany(FlashSale::class); // Produk bisa terhubung ke banyak flash sale
+    }
 }
