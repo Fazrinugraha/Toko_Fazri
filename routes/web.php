@@ -6,9 +6,10 @@ use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\DistributorController;
 use App\Http\Controllers\Admin\FlashsaleController;
-use App\Http\Controllers\User\UserController;
+use App\Http\Controllers\Admin\UserController as AdminUserController;  // Aliased as AdminUserController
+use App\Http\Controllers\User\UserController as UserUserController;    // Aliased as UserUserController
 
-// Guest Route
+// Guest Route -> halaman login dan register
 Route::group(['middleware' => 'guest'], function () {
     Route::get('/', function () {
         return view('welcome');
@@ -20,7 +21,7 @@ Route::group(['middleware' => 'guest'], function () {
 
 })->middleware('guest');
 
-// Admin Route
+// Admin Route -> halaman admin
 Route::group(['middleware' => 'admin'], function () {
     Route::get('/admin', [AdminController::class, 'dashboard'])->name('admin.dashboard');
 
@@ -53,18 +54,36 @@ Route::group(['middleware' => 'admin'], function () {
     Route::put('/flashsales/{id}', [FlashsaleController::class, 'update'])->name('admin.flashsales.update');  // Udate Flashsale
     Route::delete('/flashsales/{id}', [FlashsaleController::class, 'delete'])->name('admin.flashsales.delete');  // Delete Flashsale
 
+    // Admin User Route
+    Route::get('/admin/user', [AdminUserController::class, 'index'])->name('admin.user');    
+    Route::get('/admin/user/create', [AdminUserController::class, 'create'])->name('user.create');
+    Route::post('/admin/user/store', [AdminUserController::class, 'store'])->name('user.store');
+    Route::get('/admin/user/detail/{id}', [AdminUserController::class, 'detail'])->name('user.detail');
+    Route::get('/admin/user/edit/{id}', [AdminUserController::class, 'edit'])->name('user.edit');
+    Route::put('/admin/user/{id}', [AdminUserController::class, 'update'])->name('user.update'); 
+    Route::delete('/admin/user/{id}', [AdminUserController::class, 'delete'])->name('user.delete');
+
+    // 
+    Route::prefix('admin/admin')->group(function () {
+        Route::get('/', [AdminController::class, 'index'])->name('admin.admin');
+        Route::get('/create', [AdminController::class, 'create'])->name('admin.create');
+        Route::post('/store', [AdminController::class, 'store'])->name('admin.store');
+        Route::get('/edit/{id}', [AdminController::class, 'edit'])->name('admin.edit');
+        Route::put('/update/{id}', [AdminController::class, 'update'])->name('admin.update');
+        Route::delete('/delete/{id}', [AdminController::class, 'delete'])->name('admin.delete');
+        Route::get('/detail/{id}', [AdminController::class, 'detail'])->name('admin.detail'); 
+    });
+
 })->middleware('admin');
 
-
-// User Route
+// User Route -> halaman user
 Route::group(['middleware' => 'web'], function () {
     // Dashboard User
-    Route::get('/user', [UserController::class, 'index'])->name('user.dashboard');
+    Route::get('/user', [UserUserController::class, 'index'])->name('user.dashboard');
     Route::get('/user-logout', [AuthController::class, 'user_logout'])->name('user.logout');
 
     // Detail Produk User
-    Route::get('/user/product/detail/{id}', [UserController::class, 'detail_product'])->name('user.detail.product');
-    Route::get('/product/purchase/{productId}/{userId}', [UserController::class, 'purchase']);
+    Route::get('/user/product/detail/{id}', [UserUserController::class, 'detail_product'])->name('user.detail.product');
+    Route::get('/product/purchase/{productId}/{userId}', [UserUserController::class, 'purchase']);
     Route::get('/flash-sale/{id}', [FlashsaleController::class, 'detailFlashSale']);
-
 })->middleware('web');

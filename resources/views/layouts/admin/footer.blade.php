@@ -5,6 +5,6 @@
             var currentYear = new Date().getFullYear();
             document.write(currentYear);
         </script>
-        , designed & developed by <a href="#" class="text-muted">Fazri Nugraha</a>
+        , designed & developed by <a href="{{ route('admin.dashboard') }}" class="text-muted">Fazri Nugraha</a>
     </div>
 </footer>
