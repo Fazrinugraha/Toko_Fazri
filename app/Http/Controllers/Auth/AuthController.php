@@ -26,12 +26,18 @@ class AuthController extends Controller
 
         // Check for admin login attempt
         if (Auth::guard('admin')->attempt(['email' => $request->email, 'password' => $request->password])) {
-            toast('Selamat datang admin!', 'success');
+            // Retrieve the authenticated admin
+            $admin = Auth::guard('admin')->user();
+            // Use the admin's name in the success message
+            toast('Selamat datang, ' . $admin->name . '!', 'success');
             return redirect()->route('admin.dashboard');
+            // toast('Selamat datang admin!', 'success');
+            // return redirect()->route('admin.dashboard');
         } 
         // Check for regular user login attempt
         elseif (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
-            toast('Selamat datang!', 'success');
+            $user = Auth::user();
+            toast('Selamat datang, ' . $user->name . '!', 'success');
             return redirect()->route('user.dashboard');
         } 
         // Login failed
