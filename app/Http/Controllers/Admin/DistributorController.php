@@ -6,6 +6,9 @@ use Illuminate\Http\Request;
 use App\Models\Distributor;
 use Illuminate\Support\Facades\Validator;
 use RealRashid\SweetAlert\Facades\Alert;
+use App\Imports\DistributorImport; 
+use Maatwebsite\Excel\Facades\Excel; 
+use Barryvdh\DomPDF\Facade\Pdf; 
 
 class DistributorController extends Controller
 {
@@ -104,4 +107,59 @@ class DistributorController extends Controller
             return redirect()->back();
         }
     }
+public function import(Request $request)
+{
+    try {
+        // Validate the file
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls,csv|max:2048', // Add file type validation and size limit
+        ]);
+
+        // Get the uploaded file
+        $file = $request->file('file');
+        
+        if (!$file) {
+            Alert::error('Gagal!', 'Tidak ada file yang diupload!');
+            return redirect()->back();
+        }
+
+        // Import the file using the DistributorImport class
+        Excel::import(new DistributorImport, $file);
+
+        // Provide a success alert
+        Alert::success('Berhasil!', 'Data berhasil diimport!');
+    } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
+        // Handle validation exceptions and show detailed error messages
+        $failures = $e->failures();
+        $messages = '';
+
+        foreach ($failures as $failure) {
+            $messages .= 'Kesalahan pada baris ' . $failure->row() . ': ' . implode(', ', $failure->errors()) . '. ';
+        }
+
+        Alert::error('Gagal!', 'Validasi Gagal: ' . $messages);
+    } catch (\Exception $e) {
+        // Catch general exceptions, such as file format issues
+        Alert::error('Gagal!', 'Pastikan format dan isi sudah benar! Error: ' . $e->getMessage());
+    } finally {
+        // Redirect back after processing
+        return redirect()->back();
+    }
+}
+
+
+        // Export function
+        public function export()
+        {
+            // Get all distributors from the database
+            $distributors = Distributor::all();
+    
+            // Generate PDF and set paper size to A4 landscape
+            $pdf = Pdf::loadView('pages.admin.distributor.export', compact('distributors'))
+                    ->setPaper('a4', 'landscape');
+    
+            // Download the PDF
+            return $pdf->download('distributor.pdf');
+        }
+
 }

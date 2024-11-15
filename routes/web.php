@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\DistributorController;
 use App\Http\Controllers\Admin\FlashsaleController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;  // Aliased as AdminUserController
 use App\Http\Controllers\User\UserController as UserUserController;    // Aliased as UserUserController
+use App\Http\Controllers\Admin\HistoryController;
 
 // Guest Route -> halaman login dan register
 Route::group(['middleware' => 'guest'], function () {
@@ -63,7 +64,7 @@ Route::group(['middleware' => 'admin'], function () {
     Route::put('/admin/user/{id}', [AdminUserController::class, 'update'])->name('user.update'); 
     Route::delete('/admin/user/{id}', [AdminUserController::class, 'delete'])->name('user.delete');
 
-    // 
+    // Admin Route
     Route::prefix('admin/admin')->group(function () {
         Route::get('/', [AdminController::class, 'index'])->name('admin.admin');
         Route::get('/create', [AdminController::class, 'create'])->name('admin.create');
@@ -72,6 +73,15 @@ Route::group(['middleware' => 'admin'], function () {
         Route::put('/update/{id}', [AdminController::class, 'update'])->name('admin.update');
         Route::delete('/delete/{id}', [AdminController::class, 'delete'])->name('admin.delete');
         Route::get('/detail/{id}', [AdminController::class, 'detail'])->name('admin.detail'); 
+
+    // Distributor import
+    Route::post('/distributor/import', [DistributorController::class, 'import'])->name('distributor.import');
+    Route::get('/distributor/export', [DistributorController::class, 'export'])->name('distributor.export');
+
+    // History
+    Route::get('/history', [HistoryController::class, 'index'])->name('admin.history');
+    Route::get('/history/detail/{id}', [HistoryController::class, 'detail'])->name('history.detail');
+
     });
 
 })->middleware('admin');
@@ -86,4 +96,8 @@ Route::group(['middleware' => 'web'], function () {
     Route::get('/user/product/detail/{id}', [UserUserController::class, 'detail_product'])->name('user.detail.product');
     Route::get('/product/purchase/{productId}/{userId}', [UserUserController::class, 'purchase']);
     Route::get('/flash-sale/{id}', [FlashsaleController::class, 'detailFlashSale']);
+
+    // History
+    Route::get('/user/history/{id}', [UserUserController::class, 'history'])->name('user.history');
+    
 })->middleware('web');

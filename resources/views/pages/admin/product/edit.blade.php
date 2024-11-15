@@ -21,6 +21,17 @@
                 enctype="multipart/form-data" method="POST">
                 @csrf
                 <div class="card-body">
+                <div class="col-6">
+                            <div class="form-group">
+                                <label for="name">Nama Distributor</label>
+                                <select name="id_distributor" class="form-control"> 
+                                    @foreach ($distributor as $item) 
+                                    <option value="{{ $item->id }}"> 
+                                    {{ $item->nama_distibutor }}</option> 
+                                    @endforeach 
+                                </select> 
+                            </div>
+                        </div>
                     <div class="row">
                         <div class="col-6">
                             <div class="form-group">

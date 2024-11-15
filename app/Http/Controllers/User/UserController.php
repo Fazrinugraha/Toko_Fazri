@@ -7,7 +7,9 @@ use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Models\User;
 use App\Models\Flashsale;
+use App\Models\History;
 use RealRashid\SweetAlert\Facades\Alert;
+use Illuminate\Support\Facades\DB;
 
 class UserController extends Controller
 {
@@ -56,6 +58,12 @@ class UserController extends Controller
                 'point' => $totalPoints,
             ]);
 
+            History::create([
+                'id_user' => $userId,
+                'id_product' => $productId,
+                'total_harga' => $price,
+            ]);
+
             Alert::success('Berhasil!', 'Produk berhasil dibeli!');
             return redirect()->back();
         } else {
@@ -63,4 +71,16 @@ class UserController extends Controller
             return redirect()->back();
         }
     }
+
+    public function history($id)
+    {
+        $data = DB::table('histories')
+            ->join('products', 'products.id', '=', 'histories.id_product')
+            ->where('histories.id_user', '=', $id)
+            ->get();
+
+        return view('pages.user.history',compact('data'));
+
+    }
+
 }

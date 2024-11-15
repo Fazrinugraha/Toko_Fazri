@@ -38,7 +38,7 @@
                                         @foreach ($flashsales as $flashsale)
                                             <tr>
                                                 <td>{{ $loop->iteration }}</td>
-                                                <td>{{ $flashsale->product->name }}</td>
+                                                <td>{{ $flashsale->product ? $flashsale->product->name : 'Produk tidak tersedia' }}</td>
                                                 <td>{{ $flashsale->discount_price }}</td>
                                                 <td>{{ $flashsale->start_time }}</td>
                                                 <td>{{ $flashsale->end_time }}</td>
